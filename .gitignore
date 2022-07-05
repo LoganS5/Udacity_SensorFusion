@@ -1,3 +1,6 @@
 dataset
 img
 tools
+results
+.*
+*/__pycache__*
