@@ -124,8 +124,9 @@ def bev_from_pcl(lidar_pcl, configs):
     lidar_pcl_cpy[:,1] = np.floor((lidar_pcl[:,1]-configs.lim_y[0])/(cell_width+0.0000001))
     
     # step 4 : visualize point-cloud using the function show_pcl from a previous task
-    # show_pcl(lidar_pcl_cpy)
+    show_pcl(lidar_pcl_cpy)
 
+    # create another copy for sorting height
     lidar_pcl_cpy2 = np.copy(lidar_pcl_cpy)
     #######
     ####### ID_S2_EX1 END #######     
@@ -147,7 +148,6 @@ def bev_from_pcl(lidar_pcl, configs):
     _, idx, counts = np.unique(lidar_pcl_cpy[:,0:2], return_index=True, return_counts=True, axis=0)
     lidar_bright_pcl = lidar_pcl_cpy[idx]
     ## step 4 : assign the intensity value of each unique entry in lidar_top_pcl to the intensity map
-    # The course material says the maximum intensity should be taken (which makes more sense), so I've assumed this is a mistake and done that.
     ##          make sure that the intensity is scaled in such a way that objects of interest (e.g. vehicles) are clearly visible    
     ##          also, make sure that the influence of outliers is mitigated by normalizing intensity on the difference between the max. and min. value within the point cloud
 

@@ -68,14 +68,8 @@ def load_configs_model(model_name='darknet', configs=None):
         configs.num_layers = 18
         configs.conf_thresh = 0.5
         configs.K = 50
-
-        # configs.pin_memory = True
-        # configs.distributed = False  # For testing on 1 GPU only
-
-        # configs.input_size = (608, 608)
-        # configs.hm_size = (152, 152)
         configs.down_ratio = 4
-        # configs.max_objects = 50
+
 
         configs.imagenet_pretrained = False
         configs.head_conv = 64
@@ -92,14 +86,7 @@ def load_configs_model(model_name='darknet', configs=None):
             'z_coor': configs.num_z,
             'dim': configs.num_dim
         }
-        # configs.num_input_features = 4
 
-        # configs.root_dir = '../'
-        # configs.dataset_dir = os.path.join(configs.root_dir, 'dataset')
-
-        # if configs.save_test_output:
-        #     configs.results_dir = os.path.join(configs.root_dir, 'results', configs.saved_fn)
-        #     make_folder(configs.results_dir)
         #######
         ####### ID_S3_EX1-3 END #######     
 
@@ -135,6 +122,9 @@ def load_configs(model_name='fpn_resnet', configs=None):
     # visualization parameters
     configs.output_width = 608 # width of result image (height may vary)
     configs.obj_colors = [[0, 255, 255], [0, 0, 255], [255, 0, 0]] # 'Pedestrian': 0, 'Car': 1, 'Cyclist': 2
+
+    # Min iou was missing and needed for darknet and resnet
+    configs.min_iou = 0.5
 
     return configs
 
@@ -226,7 +216,7 @@ def detect_objects(input_bev_maps, model, configs):
     objects = [] 
 
     ## step 1 : check whether there are any detections
-    if len(detections>0):
+    if len(detections)>0:
         ## step 2 : loop over all detections
         for detection in detections:
             ## step 3 : perform the conversion using the limits for x, y and z set in the configs structure
