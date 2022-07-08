@@ -92,10 +92,10 @@ def load_configs_model(model_name='darknet', configs=None):
             'z_coor': configs.num_z,
             'dim': configs.num_dim
         }
-        configs.num_input_features = 4
+        # configs.num_input_features = 4
 
-        configs.root_dir = '../'
-        configs.dataset_dir = os.path.join(configs.root_dir, 'dataset')
+        # configs.root_dir = '../'
+        # configs.dataset_dir = os.path.join(configs.root_dir, 'dataset')
 
         # if configs.save_test_output:
         #     configs.results_dir = os.path.join(configs.root_dir, 'results', configs.saved_fn)
@@ -208,13 +208,12 @@ def detect_objects(input_bev_maps, model, configs):
             print("student task ID_S3_EX1-5")
             outputs['hm_cen'] = _sigmoid(outputs['hm_cen'])
             outputs['cen_offset'] = _sigmoid(outputs['cen_offset'])
-            # detections size (batch_size, K, 10)
-
             detections = decode(outputs['hm_cen'], outputs['cen_offset'], outputs['direction'], outputs['z_coor'],
                                 outputs['dim'], K=configs.K)
             detections = detections.cpu().numpy().astype(np.float32)
             detections = post_processing(detections, configs)
-            x=3
+            # take first and only batch (0) and vehicle class (1)
+            detections = detections[0][1]
             #######
             ####### ID_S3_EX1-5 END #######     
 
@@ -227,12 +226,19 @@ def detect_objects(input_bev_maps, model, configs):
     objects = [] 
 
     ## step 1 : check whether there are any detections
-
+    if len(detections>0):
         ## step 2 : loop over all detections
-        
+        for detection in detections:
             ## step 3 : perform the conversion using the limits for x, y and z set in the configs structure
-        
+            x = detection[2] * (configs.lim_x[1] - configs.lim_x[0])/configs.bev_height + configs.lim_x[0]
+            y = detection[1] * (configs.lim_y[1] - configs.lim_y[0])/configs.bev_width + configs.lim_y[0]
+            z = detection[3]
+            h = detection[4]
+            w = detection[5] * (configs.lim_y[1] - configs.lim_y[0])/configs.bev_width
+            l = detection[6] * (configs.lim_x[1] - configs.lim_x[0])/configs.bev_height
+            yaw = -detection[7]
             ## step 4 : append the current object to the 'objects' array
+            objects.append([1, x, y, z, h, w, l, yaw])
         
     #######
     ####### ID_S3_EX2 START #######   
